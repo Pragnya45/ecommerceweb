@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const {getUserById , getUser, updateUser} = require("../controllers/user");
+const { getUserById, getUser, updateUser } = require("../controllers/user");
 
-const{isSignedIn, isAuthenticated, isAdmin} = require("../controllers/auth");
+const { isSignedIn, isAuthenticated, isAdmin } = require("../controllers/auth");
 
-router.param("id", getUserById);
+router.param("userId", getUserById);
 
-router.get("/user/:id", isSignedIn, isAuthenticated, getUser);
+router.get("/user/:userId", isSignedIn, isAuthenticated, getUser);
 //router.get("/users",getAllUsers);//creating a router .get all users assignment
-router.put("/user/:userId",updateUser);
+router.put("/user/:userId", isSignedIn, isAuthenticated, updateUser);
 module.exports = router;
