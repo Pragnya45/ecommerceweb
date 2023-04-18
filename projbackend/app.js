@@ -10,9 +10,11 @@ const cors = require("cors");
 //My routes
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
-// const categoryRoutes = require("./routes/category");
-// const productRoutes = require("./routes/product");
-// const orderRoutes = require("./routes/order");
+const categoryRoutes = require("./routes/category");
+
+const productRoutes = require("./routes/product");
+
+const orderRoutes = require("./routes/order");
 // const paymentBRoutes = require("./routes/paymentBRoutes");
 
 //DB Connections
@@ -34,9 +36,9 @@ app.use(cors());
 //My Routes
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);   ///middileware to handel it
-// app.use("/api", categoryRoutes);
-// app.use("/api", productRoutes);
-// app.use("/api", orderRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", productRoutes);
+app.use("/api", orderRoutes);
 // app.use("/api", paymentBRoutes);
 
 //PORT
