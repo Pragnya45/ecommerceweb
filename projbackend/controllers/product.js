@@ -31,20 +31,18 @@ exports.createProduct = (req, res) => {
     
     
     // destructure the fields
-    //const { name, description, price, category, stock} = fields;
+    const { name, description, price, category, stock} = fields;
 
-    //if(!name || !description || !price || !category || !stock) {
-       // return res.status(400).json({
-         //   error: "Please include all fields"
-        //});
-    //}
-
-
+    if(!name || !description || !price || !category || !stock) {
+       return res.status(400).json({
+           error: "Please include all fields"
+        });
+    }
 
 
-    // updation code
-    let product = req.product;
-    product = _.extend(product, fields)
+
+
+    let product = new Product(fields);
 
     //handel file here
     if(file.photo){
@@ -53,7 +51,7 @@ exports.createProduct = (req, res) => {
             error:"File size too big!"
         });
     }
-
+    
     product.photo.data = fs.readFileSync(file.photo.path);
     product.photo.contentType = file.photo.type;
    };
@@ -62,7 +60,7 @@ exports.createProduct = (req, res) => {
    //save to the DB
    product.save((err, product) => {
     if(err){
-       res.status(400).json({
+      res.status(400).json({
         error: "Saving tshirt in DB failed"
        }) ;
     }
@@ -74,9 +72,9 @@ exports.createProduct = (req, res) => {
 
 exports.getProduct = (req, res) => {
     req.product.photo = undefined
-    return res.json(req.product)
-}
-
+    return res.json(req.product);
+};
+//middleware
 exports.photo = (req, res, next) => {
     if(req.product.photo.data){
         res.set("Content-Type", req.product.photo.contentType)
@@ -102,17 +100,50 @@ exports.deleteProduct =(req, res) => {
 
 //update controllers
 exports.updateProduct =(req, res) => {
-    product.save((err, product) => {
-        if(err){
-           res.status(400).json({
-            error: "updation of product failed"
-           }) ;
-        }
-        res.json(product);
-    
-       });
-}
+    let form = new formidable.IncomingForm();//creation of form using formidable. incoming form   expects 3 parameter err, fields(name,price,description),files
+   form.keepExtensions = true;
 
+   form.parse(req, (err,fields, file) => {
+    if(err){
+        return res.status(400).json({
+            error:"problem with image"
+        });
+    }
+    
+    
+    
+
+
+
+    // updation code
+    let product = req.product;
+    product = _.extend(product, fields)
+
+    //handel file here
+    if(file.photo){
+        if(file.photo.size > 3000000){
+            return res.status(400).json({
+            error:"File size too big!"
+        });
+    }
+    
+    product.photo.data = fs.readFileSync(file.photo.path);
+    product.photo.contentType = file.photo.type;
+   };
+   //console.log(product);
+
+   //save to the DB
+   product.save((err, product) => {
+    if(err){
+      return res.status(400).json({
+        error: "updation of product failed"
+       }) ;
+    }
+    res.json(product);
+
+   });
+});
+};
 //product listing
 exports.getAllProducts = (req, res) => {
 

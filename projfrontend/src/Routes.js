@@ -8,6 +8,12 @@ import PrivateRoute from "./auth/helper/PrivateRoutes";
 import UserDashBoard from "./user/UserDashBoard";
 import AdminDashBoard from "./user/AdminDashBoard";
 import AddCategory from "./admin/AddCategory";
+import ManageCategories from "./admin/ManageCategories";
+import AddProduct from "./admin/AddProduct";
+import ManageProducts from "./admin/ManageProducts";
+import UpdateProduct from "./admin/UpdateProduct";
+
+
 
 const Routes = () => {
   return (
@@ -31,6 +37,36 @@ const Routes = () => {
             element={<AddCategory />}
           />
         </Route>
+        <Route exact path="/admin/categories" element={<PrivateRoute />}>
+          <Route
+            exact
+            path="/admin/categories"
+            element={<ManageCategories />}
+          />
+        </Route>
+          <Route exact path="/admin/create/product" element={<PrivateRoute />}>
+          <Route
+            exact
+            path="/admin/create/product"
+            element={<AddProduct />}
+          />
+        </Route>
+        <Route exact path="/admin/products" element={<PrivateRoute />}>
+          <Route
+            exact
+            path="/admin/products"
+            element={<ManageProducts/>}
+          />
+        </Route>
+        <Route exact path="/admin/product/update/:productId" element={<PrivateRoute />}>
+          <Route
+            exact
+            path="/admin/product/update/:productId"
+            element={<UpdateProduct/>}
+          />
+        </Route>
+
+
       </Switch>
     </BrowserRouter>
   );
