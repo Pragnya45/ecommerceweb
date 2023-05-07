@@ -12,7 +12,7 @@ import ManageCategories from "./admin/ManageCategories";
 import AddProduct from "./admin/AddProduct";
 import ManageProducts from "./admin/ManageProducts";
 import UpdateProduct from "./admin/UpdateProduct";
-
+import Cart from "./core/Cart";
 
 
 const Routes = () => {
@@ -22,6 +22,7 @@ const Routes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
+        <Route path="/cart" element={<Cart />} />
 
         <Route exact path="/user/dashboard" element={<PrivateRoute />}>
           <Route exact path="/user/dashboard" element={<UserDashBoard />} />

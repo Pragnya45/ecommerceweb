@@ -55,7 +55,7 @@ const ManageProducts = () => {
                     onClick={() => {
                       console.log(product._id);
                     }}
-                    //    to={`/admin/product/update/${product._id}`}
+                     to={`/admin/product/update/${product._id}`}
                   >
                     <span className="">Update</span>
                   </Link>
