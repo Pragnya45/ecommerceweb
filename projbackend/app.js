@@ -45,6 +45,8 @@ app.use("/api", orderRoutes);
 //PORT
 const port = process.env.PORT || 8000;
 
+app.get("/", (req, res) => res.send("Backend Server Running Successfully"));
+
 //Starting a server
 app.listen(port, () => {
   console.log(`app is running at ${port}`);
