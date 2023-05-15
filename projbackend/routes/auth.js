@@ -23,9 +23,9 @@ router.post("/signin", [
   check("password", "password field is required").isLength({
     min: 1,
   }),
-
-  signin,
-]);
+],
+  signin
+);
 
 router.get("/signout", signout);
 
