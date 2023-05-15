@@ -44,7 +44,7 @@ const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
             </button>
           </div>
         ) : (
-          <h3>Please login or add something to cart</h3>
+          <h3></h3>
         )}
       </div>
     );

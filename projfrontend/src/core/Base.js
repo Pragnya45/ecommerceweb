@@ -3,7 +3,7 @@ import Menu from "./Menu";
 
 const Base = ({
   title = "My Title",
-  description = "My description",
+  description = "My desription",
   className = "bg-dark text-white p-4",
   children
 }) => (
@@ -22,14 +22,11 @@ const Base = ({
         <button className="btn btn-warning btn-lg">Contact Us</button>
       </div>
       <div className="container">
-        <span className="text-white">
-          An Amazing 
-          <span className="text-white">MERN</span>
-           Bootcamp
+        <span className="text-muted">
+          An Amazing <span className="text-white">MERN</span> Bootcamp
         </span>
       </div>
     </footer>
-  
   </div>
 );
 
