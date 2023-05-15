@@ -66,6 +66,7 @@ const Routes = () => {
             element={<UpdateProduct/>}
           />
         </Route>
+       
 
 
       </Switch>
