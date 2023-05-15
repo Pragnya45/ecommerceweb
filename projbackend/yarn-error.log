@@ -1,0 +1,58 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\bhara\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js install
+
+PATH: 
+  C:\Program Files\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Program Files\Docker\Docker\resources\bin;C:\Users\bhara\.local\share\solana\install\active_release\bin;C:\Users\bhara\.cargo\bin;C:\Users\bhara\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\bhara\AppData\Local\Programs\Python\Python311\;C:\Users\bhara\scoop\shims;C:\Users\bhara\AppData\Local\Microsoft\WindowsApps;C:\Users\bhara\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.12.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\bhara\AppData\Local\Yarn\Cache\v6\npm-@types-node-20.1.0-258805edc37c327cf706e64c6957f241ca4c4c20-integrity\node_modules\@types\node\.yarn-tarball.tgz'
+
+npm manifest: 
+  {
+    "name": "projbackend",
+    "version": "1.0.0",
+    "main": "app.js",
+    "scripts": {
+      "start": "nodemon app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "2": "^3.0.0",
+      "body-parser": "^1.20.2",
+      "braintree": "^2.24.0",
+      "cookie-parser": "^1.4.6",
+      "cors": "^2.8.5",
+      "dotenv": "^8.6.0",
+      "express": "^4.17.1",
+      "express-jwt": "^5.3.1",
+      "express-validator": "^6.15.0",
+      "formidable": "^1.2.1",
+      "i": "^0.3.6",
+      "jsonwebtoken": "^8.5.1",
+      "lodash": "^4.17.15",
+      "mongoose": "^5.7.7",
+      "morgan": "^1.9.1",
+      "nodemon": "^1.19.4",
+      "npm": "^6.13.0",
+      "uuid": "^3.3.3",
+      "version": "^0.1.2"
+    },
+    "description": ""
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
