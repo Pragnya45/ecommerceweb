@@ -1,26 +1,27 @@
-import { config } from "dotenv";
-import { connect } from "mongoose";
-import express from "express";
+require("dotenv").config();
+const mongoose = require("mongoose");
+const express = require("express");
 const app = express();
-import { json } from "body-parser";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-config();
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 //My routes
-import authRoutes from "./routes/auth";
-import userRoutes from "./routes/user";
-import categoryRoutes from "./routes/category";
-import productRoutes from "./routes/product";
-import orderRoutes from "./routes/order";
-import paymentBRoutes from "./routes/paymentBRoutes";
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
+const categoryRoutes = require("./routes/category");
+
+const productRoutes = require("./routes/product");
+
+const orderRoutes = require("./routes/order");
+const paymentBRoutes = require("./routes/paymentBRoutes");
 
 //DB Connections
-connect(process.env.DATABASE).then(() => {
+mongoose.connect(process.env.DATABASE).then(() => {
   console.log("DB CONNECTED");
 });
 
 //Middlewares
-app.use(json());
+app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
 
