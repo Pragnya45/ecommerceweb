@@ -1,19 +1,16 @@
-require("dotenv").config();
-
+import { config } from "dotenv";
 import { connect } from "mongoose";
 import express from "express";
 const app = express();
 import { json } from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
+config();
 //My routes
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import categoryRoutes from "./routes/category";
-
 import productRoutes from "./routes/product";
-
 import orderRoutes from "./routes/order";
 import paymentBRoutes from "./routes/paymentBRoutes";
 
