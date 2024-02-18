@@ -4,23 +4,22 @@ import { Link } from "react-router-dom";
 import { getmeToken, processPayment } from "./helper/paymentbhelper";
 import { createOrder } from "./helper/orderHelper";
 import { isAuthenticated } from "../auth/helper";
-
 import DropIn from "braintree-web-drop-in-react";
 
-const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
+const Paymentb = ({ products, setReload, reload }) => {
   const [info, setInfo] = useState({
     loading: false,
     success: false,
     clientToken: null,
     error: "",
-    instance: {}
+    instance: {},
   });
 
   const userId = isAuthenticated() && isAuthenticated().user._id;
   const token = isAuthenticated() && isAuthenticated().token;
 
   const getToken = (userId, token) => {
-    getmeToken(userId, token).then(data => {
+    getmeToken(userId, token).then((data) => {
       if (info.error) {
         setInfo({ ...info, error: info.error });
       } else {
@@ -29,7 +28,9 @@ const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
       }
     });
   };
-
+  useEffect(() => {
+    getToken(userId, token);
+  }, []);
   const showbtdropIn = () => {
     return (
       <div>
@@ -37,41 +38,37 @@ const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
           <div>
             <DropIn
               options={{ authorization: info.clientToken }}
-              onInstance={instance => (info.instance = instance)}
+              onInstance={(instance) => (info.instance = instance)}
             />
             <button className="btn btn-block btn-success" onClick={onPurchase}>
               Buy
             </button>
           </div>
         ) : (
-          <h3></h3>
+          <h3>Please Login</h3>
         )}
       </div>
     );
   };
 
-  useEffect(() => {
-    getToken(userId, token);
-  }, []);
-
   const onPurchase = () => {
     setInfo({ ...info, loading: true });
     if (info.instance) {
       let nonce;
-      info.instance.requestPaymentMethod().then(data => {
+      info.instance.requestPaymentMethod().then((data) => {
         nonce = data.nonce;
         const paymentData = {
           paymentMethodNonce: nonce,
-          amount: getAmount()
+          amount: getAmount(),
         };
         processPayment(userId, token, paymentData)
-          .then(response => {
+          .then((response) => {
             setInfo({ ...info, success: response.success, loading: false });
             console.log("PAYMENT SUCCESS");
             const orderData = {
               products: products,
               transaction_id: response.transaction.id,
-              amount: response.transaction.amount
+              amount: response.transaction.amount,
             };
             createOrder(userId, token, orderData);
             cartEmpty(() => {
@@ -80,7 +77,7 @@ const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
 
             setReload(!reload);
           })
-          .catch(error => {
+          .catch((error) => {
             setInfo({ ...info, loading: false, success: false });
             console.log("PAYMENT FAILED");
           });
@@ -90,7 +87,7 @@ const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
 
   const getAmount = () => {
     let amount = 0;
-    products.map(p => {
+    products.map((p) => {
       amount = amount + p.price;
     });
     return amount;
@@ -98,7 +95,7 @@ const Paymentb = ({ products, setReload = f => f, reload = undefined }) => {
 
   return (
     <div>
-      <h3>Your bill is {getAmount()} $</h3>
+      <h3>Your total bill {getAmount()} $</h3>
       {showbtdropIn()}
     </div>
   );

@@ -3,65 +3,31 @@ const { check, validationResult } = require("express-validator");
 var jwt = require("jsonwebtoken");
 var expressJwt = require("express-jwt");
 
-exports.signup = (req, res) => {
-  const errors = validationResult(req);
+exports.signup = async (req, res) => {
+  try {
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(422).json({
-      error: errors.array()[0].msg,
-    });
-  }
-
-  const user = new User(req.body);
-  user.save((err, user) => {
-    //saving a user in a database
-    if (err) {
-      ///console.log(err)
-      return res.status(400).json({
-        err: "Not able to save user in DB",
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        error: errors.array()[0].msg,
       });
     }
+
+    const user = new User(req.body);
+    await user.save(); // Save the user to the database
+
     res.json({
       name: user.name,
       email: user.email,
       id: user._id,
     });
-  });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      error: "Not able to save user in DB",
+    });
+  }
 };
-
-// exports.signin = (req, res) => {
-//   const errors = validationResult(req);
-//   const { email, password } = req.body; //destructuring code
-
-//   if (!errors.isEmpty()) {
-//     ///validation error
-//     return res.status(422).json({
-//       error: errors.array()[0].msg,
-//     });
-//   }
-//   // User.findOne({ email }, (err, user) => {
-//   //   if (err || !user) {
-//   //     return res.status(400).json({
-//   //       error: "User email does not exist",
-//   //     });
-//   //   }
-
-//   //   if (!user.authenticate(password)) {
-//   //     return res.status(401).json({
-//   //       error: "Email and password do not match",
-//   //     });
-//   //   }
-
-//   //   //create token
-//   //   const token = jwt.sign({ _id: user._id }, process.env.SECRET);
-//   //   //put token in cookie
-//   //   res.cookie("token", token, { expire: new Date() + 9999 });
-
-//   //   //send response to front end
-//   //   const { _id, name, email, role } = user;
-//   //   return res.json({ token, user: { _id, name, email, role } });
-//   // });
-// };
 
 exports.signin = async (req, res) => {
   try {
@@ -95,6 +61,7 @@ exports.signin = async (req, res) => {
 
     // Put token in cookie
     res.cookie("token", token, { expire: new Date() + 9999 });
+    // new Date(Date.now() + 9999);
 
     // Send response to frontend
     const { _id, name, role } = user;
@@ -121,7 +88,6 @@ exports.isSignedIn = expressJwt({
 //custom middlewares
 
 exports.isAuthenticated = (req, res, next) => {
-  console.log("reach here");
   let checker = req.profile && req.auth && req.profile._id == req.auth._id;
   if (!checker) {
     return res.status(403).json({

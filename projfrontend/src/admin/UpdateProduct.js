@@ -24,7 +24,7 @@ const UpdateProduct = () => {
     error: "",
     createdProduct: "",
     getaRedirect: false,
-    formData: "",
+    formData: new FormData(),
   });
 
   const {
@@ -83,24 +83,22 @@ const UpdateProduct = () => {
     event.preventDefault();
     setValues({ ...values, error: "", loading: true });
 
-    updateProduct(productId, user._id, token, formData).then(
-      (data) => {
-        if (data.error) {
-          setValues({ ...values, error: data.error });
-        } else {
-          setValues({
-            ...values,
-            name: "",
-            description: "",
-            price: "",
-            photo: "",
-            stock: "",
-            loading: false,
-            createdProduct: data.name,
-          });
-        }
+    updateProduct(productId, user._id, token, formData).then((data) => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        setValues({
+          ...values,
+          name: "",
+          description: "",
+          price: "",
+          photo: "",
+          stock: "",
+          loading: false,
+          createdProduct: data.name,
+        });
       }
-    );
+    });
   };
 
   const handleChange = (name) => (event) => {

@@ -1,195 +1,190 @@
 const Product = require("../models/product");
 const formidable = require("formidable");
 const _ = require("lodash");
-const fs = require("fs");//file system
+const fs = require("fs"); //file system
 
+exports.getProductById = async (req, res, next, id) => {
+  try {
+    const product = await Product.findById(id).populate("category").exec();
 
-exports.getProductById = (req, res,next,id) => {
-    Product.findById(id)
-    .populate("category")
-    .exec((err,product) => {
-        if(err){
-            return res.status(400).json({
-                error:"Product not found"
-            });
-        }
-        req.product = product;
-        next();
+    if (!product) {
+      return res.status(400).json({
+        error: "Product not found",
+      });
+    }
+
+    req.product = product;
+    next();
+  } catch (err) {
+    return res.status(500).json({
+      error: "Internal Server Error",
     });
+  }
 };
 
-exports.createProduct = (req, res) => {
-   let form = new formidable.IncomingForm();//creation of form using formidable. incoming form   expects 3 parameter err, fields(name,price,description),files
-   form.keepExtensions = true;
+exports.createProduct = async (req, res) => {
+  try {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
 
-   form.parse(req, (err,fields, file) => {
-    if(err){
+    form.parse(req, async (err, fields, file) => {
+      if (err) {
         return res.status(400).json({
-            error:"problem with image"
+          error: "problem with image",
         });
-    }
-    
-    
-    // destructure the fields
-    const { name, description, price, category, stock} = fields;
+      }
 
-    if(!name || !description || !price || !category || !stock) {
-       return res.status(400).json({
-           error: "Please include all fields"
+      const { name, description, price, category, stock } = fields;
+
+      if (!name || !description || !price || !category || !stock) {
+        return res.status(400).json({
+          error: "Please include all fields",
         });
-    }
+      }
 
+      let product = new Product(fields);
 
+      if (file.photo) {
+        if (file.photo.size > 3000000) {
+          return res.status(400).json({
+            error: "File size too big!",
+          });
+        }
 
+        product.photo.data = fs.readFileSync(file.photo.path);
+        product.photo.contentType = file.photo.type;
+      }
 
-    let product = new Product(fields);
-
-    //handel file here
-    if(file.photo){
-        if(file.photo.size > 3000000){
-            return res.status(400).json({
-            error:"File size too big!"
-        });
-    }
-    
-    product.photo.data = fs.readFileSync(file.photo.path);
-    product.photo.contentType = file.photo.type;
-   };
-   //console.log(product);
-
-   //save to the DB
-   product.save((err, product) => {
-    if(err){
-      res.status(400).json({
-        error: "Saving tshirt in DB failed"
-       }) ;
-    }
-    res.json(product);
-
-   });
-});
+      const newProduct = await product.save();
+      res.json(newProduct);
+    });
+  } catch (err) {
+    return res.status(400).json({
+      error: "Saving product in DB failed",
+    });
+  }
 };
 
 exports.getProduct = (req, res) => {
-    req.product.photo = undefined
-    return res.json(req.product);
+  req.product.photo = undefined;
+  return res.json(req.product);
 };
 //middleware
 exports.photo = (req, res, next) => {
-    if(req.product.photo.data){
-        res.set("Content-Type", req.product.photo.contentType)
-        return res.send(req.product.photo.data)
-    }
-    next();
-    }
+  if (req.product.photo.data) {
+    res.set("Content-Type", req.product.photo.contentType);
+    return res.send(req.product.photo.data);
+  }
+  next();
+};
 //delete controllers
-exports.deleteProduct =(req, res) => {
+exports.deleteProduct = async (req, res) => {
+  try {
     let product = req.product;
-    product.remove((err,deletedProduct) => {
-      if(err){
-        return res.status(400).json({
-           error: "Failed to delete the product" 
-        })
-      }
-      res.json({
-        message:"Deletion was a success",
-        deletedProduct
-      });
+    const deletedProduct = await product.deleteOne();
+
+    res.json({
+      message: "Deletion was a success",
+      deletedProduct,
     });
-}
+  } catch (err) {
+    return res.status(400).json({
+      error: "Failed to delete the product",
+    });
+  }
+};
 
 //update controllers
-exports.updateProduct =(req, res) => {
-    let form = new formidable.IncomingForm();//creation of form using formidable. incoming form   expects 3 parameter err, fields(name,price,description),files
-   form.keepExtensions = true;
+exports.updateProduct = async (req, res) => {
+  try {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
 
-   form.parse(req, (err,fields, file) => {
-    if(err){
+    form.parse(req, async (err, fields, file) => {
+      if (err) {
         return res.status(400).json({
-            error:"problem with image"
+          error: "problem with image",
         });
-    }
-    
-    
-    
+      }
 
+      // updation code
+      let product = req.product;
+      product = _.extend(product, fields);
 
+      //handel file here
+      if (file.photo) {
+        if (file.photo.size > 3000000) {
+          return res.status(400).json({
+            error: "File size too big!",
+          });
+        }
 
-    // updation code
-    let product = req.product;
-    product = _.extend(product, fields)
+        product.photo.data = fs.readFileSync(file.photo.path);
+        product.photo.contentType = file.photo.type;
+      }
 
-    //handel file here
-    if(file.photo){
-        if(file.photo.size > 3000000){
-            return res.status(400).json({
-            error:"File size too big!"
-        });
-    }
-    
-    product.photo.data = fs.readFileSync(file.photo.path);
-    product.photo.contentType = file.photo.type;
-   };
-   //console.log(product);
-
-   //save to the DB
-   product.save((err, product) => {
-    if(err){
-      return res.status(400).json({
-        error: "updation of product failed"
-       }) ;
-    }
-    res.json(product);
-
-   });
-});
+      const updatedProduct = await product.save();
+      res.json(updatedProduct);
+    });
+  } catch (err) {
+    return res.status(400).json({
+      error: "Updation of product failed",
+    });
+  }
 };
+
 //product listing
 exports.getAllProducts = (req, res) => {
+  let limit = req.query.limit ? parseInt(req.query.limit) : 8;
+  let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
-    let limit = req.query.limit ? parseInt(req.query.limit) : 8;
-    let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
-    Product.find()
-    .select("-photo")// -ve is for not  to select photo
+  const query = Product.find()
+    .select("-photo")
     .populate("category")
-    .sort([[sortBy,"asc"]])
-    .limit(limit)
-    .exec((err, products) => { 
-        if(err){
-            return res.status(400).json({
-                error:"No product Found"
-            })
-        }
-        res.json(products)
+    .sort([[sortBy, "asc"]])
+    .limit(limit);
+
+  query
+    .exec()
+    .then((products) => {
+      res.json(products);
     })
+    .catch((err) => {
+      return res.status(400).json({
+        error: "No product Found",
+      });
+    });
 };
 
 exports.getAllUniqueCategories = (req, res) => {
-    Product.distinct("category", {}, (err,category) => {
-        if(err){
-            return res.status(400).json({
-                error: "No category found"
-            })
-        }
-        res.json(category);
-    })
-}
+  Product.distinct("category", {}, (err, category) => {
+    if (err) {
+      return res.status(400).json({
+        error: "No category found",
+      });
+    }
+    res.json(category);
+  });
+};
 
 exports.updateStock = (req, res, next) => {
-    let myOperations = req.body.order.products.map(prod => {
-        return {
-            updateOne: {
-                filter: {_id: prod._id},
-                update: {$inc: {stock: -prod.count, sold: +prod.count}}
-            }
-        }
+  let myOperations = req?.body?.order?.products?.map((prod) => {
+    return {
+      updateOne: {
+        filter: { _id: prod._id },
+        update: { $inc: { stock: -prod.count, sold: +prod.count } },
+      },
+    };
+  });
+
+  Product.bulkWrite(myOperations, {})
+    .then((result) => {
+      // result is an object containing information about the bulkWrite operation
+      next();
     })
-    Product.bulkWrite(myOperations, {}, (err, product) => {
-        if(err){
-            return res.status(400).json({
-                error:"Bulk operation failed"
-            })
-        }
-        next();
-    })
-}
+    .catch((err) => {
+      return res.status(400).json({
+        error: "Bulk operation failed",
+      });
+    });
+};

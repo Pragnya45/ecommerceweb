@@ -7,13 +7,12 @@ const Card = ({
   product,
   addtoCart = true,
   removeFromCart = false,
-  setReload = f => f,
-  //function(f){return f}
-  reload = undefined
-  
+  setReload,
+  reload,
 }) => {
   const [redirect, setRedirect] = useState(false);
   const [count, setCount] = useState(product.count);
+  const navigate = useNavigate();
 
   const cartTitle = product ? product.name : "A photo from pexels";
   const cartDescription = product ? product.description : "Default description";
@@ -23,14 +22,13 @@ const Card = ({
     addItemToCart(product, () => setRedirect(true));
   };
 
-  const getARedirect = redirect => {
+  const getARedirect = (redirect) => {
     if (redirect) {
-      //
-       <useNavigate to="/cart" />; 
-  }
+      return navigate("/cart");
+    }
   };
 
-  const showAddToCart = addtoCart => {
+  const showAddToCart = (addtoCart) => {
     return (
       addtoCart && (
         <button
@@ -43,7 +41,7 @@ const Card = ({
     );
   };
 
-  const showRemoveFromCart = removeFromCart => {
+  const showRemoveFromCart = (removeFromCart) => {
     return (
       removeFromCart && (
         <button
